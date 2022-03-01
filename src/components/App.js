@@ -1,7 +1,8 @@
 import "../styles/App.css";
+import LinkList from "./LinkList";
 
 function App() {
-  return <h1>React / GraphQL / Appolo Client</h1>;
+  return <LinkList />;
 }
 
 export default App;
