@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, gql } from "@apollo/client";
+import { FEED_QUERY } from "./LinkList";
 
 const CREATE_LINK_MUTATION = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -26,7 +27,23 @@ const CreateLink = () => {
       description: formState.description,
       url: formState.url,
     },
-    // onCompleted: navigate("/"),
+    update: (cache, { data: { post } }) => {
+      const data = cache.readQuery({
+        query: FEED_QUERY,
+      });
+      console.log("data from cache:", data);
+      console.log("post", post);
+
+      cache.writeQuery({
+        query: FEED_QUERY,
+        data: {
+          feed: {
+            links: [post, ...data.feed.links], // errors here => overwites only partial / post doesn't contain postedBy like all the other links(but it updates on the server)
+          },
+        },
+      });
+    },
+    onCompleted: () => navigate("/"),
   });
 
   return (
